@@ -4,3 +4,4 @@ tile.quarry.info=Quarry Info:
 tile.quarry.rf= RF stored §2%s
 tile.quarry.blacklist=Blacklisted Items:
 tile.quarry.item= §4%s
+tile.quarry.finished_gen=Finished generating table

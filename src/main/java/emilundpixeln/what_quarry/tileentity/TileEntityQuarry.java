@@ -39,7 +39,7 @@ public class TileEntityQuarry extends TileEntity implements ITickable, IEnergyRe
     private IItemHandler output;
     private static Random rnd;
     private EnergyStorage storage = new EnergyStorage(100000000);
-    private static final int RF_PER_RUN = 20000;
+    private static final int RF_PER_RUN = 2000;
     private static boolean loaded = false;
 
 
@@ -106,7 +106,7 @@ public class TileEntityQuarry extends TileEntity implements ITickable, IEnergyRe
         return false;
     }
 
-    public static void regenTables(int dim, int XWidth, int ZWidth)
+    public static void regenTables(int dim, int XWidth, int ZWidth, EntityPlayer inPlayer)
     {
         Utils.getLogger().info("qwy: exec command " + dim + " " + XWidth + " " + ZWidth);
         WorldServer world = DimensionManager.getWorld(dim);
@@ -212,6 +212,14 @@ public class TileEntityQuarry extends TileEntity implements ITickable, IEnergyRe
         data.markReady();
         data.markDirty();
         item = items;
+        //send
+        if(inPlayer != null)
+            inPlayer.sendMessage(new TextComponentTranslation("tile.quarry.finished_gen"));
+        else
+            for (EntityPlayer myplayer :
+                    world.playerEntities) {
+                myplayer.sendMessage(new TextComponentTranslation("tile.quarry.finished_gen"));
+            }
 
 
 

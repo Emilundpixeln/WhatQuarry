@@ -1,7 +1,6 @@
 package emilundpixeln.what_quarry.commands;
 
 import emilundpixeln.what_quarry.tileentity.TileEntityQuarry;
-import emilundpixeln.what_quarry.util.Utils;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
@@ -13,9 +12,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Emil_2 on 06.05.2018.
- */
+
 public class ComandGenTable implements ICommand {
     @Override
     public boolean isUsernameIndex(String[] strings, int i) {
@@ -48,7 +45,8 @@ public class ComandGenTable implements ICommand {
 
                 TileEntityQuarry.regenTables(Integer.parseInt(strings[0]),
                         Integer.parseInt(strings[1]),
-                        Integer.parseInt(strings[2]));
+                        Integer.parseInt(strings[2]),
+                        player);
             }
             catch (NumberFormatException e) {}
         }
