@@ -1,0 +1,16 @@
+[
+{
+  "modid": "wqy",
+  "name": "WhatQuarry",
+  "description": "Cool Quarry",
+  "version": "1.0",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Emilundpixeln"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

@@ -1,0 +1,1 @@
+{  "type": "minecraft:crafting_shaped",  "pattern": [    "SAS",    "AGA",    "SAS"  ],  "key": {    "S": {      "item": "wqy:nether_ingot"    },    "A": [      {        "item": "minecraft:iron_block"      }    ],    "G": {      "item": "minecraft:diamond_pickaxe"    }  },  "result": {    "item": "wqy:quarry",    "data": 0  }}
