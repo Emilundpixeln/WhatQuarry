@@ -45,7 +45,7 @@ public class TileEntityQuarry extends TileEntity implements ITickable, IEnergyRe
     private IItemHandler output;
     private static Random rnd;
     private EnergyStorage storage = new EnergyStorage(100000000);
-    private static final int RF_PER_RUN = 2000;
+    private static final int RF_PER_RUN = 20000;
     private static boolean loaded = false;
 
 

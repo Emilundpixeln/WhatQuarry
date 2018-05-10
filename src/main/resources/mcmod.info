@@ -3,7 +3,7 @@
   "modid": "wqy",
   "name": "WhatQuarry",
   "description": "Cool Quarry",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
