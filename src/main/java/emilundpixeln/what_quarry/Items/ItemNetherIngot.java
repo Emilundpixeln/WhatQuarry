@@ -3,7 +3,7 @@ package emilundpixeln.what_quarry.Items;
 import net.minecraft.item.Item;
 
 /**
- * Created by Emil_2 on 05.05.2018.
+ * Item used for crafting
  */
 public class ItemNetherIngot extends Item
 {

@@ -7,13 +7,19 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+* Command that generates the table for the quarry
+* just calls TileEntityQuarry.regenTables
+* */
 
-public class ComandGenTable implements ICommand {
+public class ComandGenTable implements ICommand
+{
     @Override
     public boolean isUsernameIndex(String[] strings, int i) {
         return false;
@@ -35,9 +41,8 @@ public class ComandGenTable implements ICommand {
     }
 
     @Override
-    public void execute(MinecraftServer minecraftServer, ICommandSender iCommandSender, String[] strings) throws CommandException {
-
-
+    public void execute(MinecraftServer minecraftServer, ICommandSender iCommandSender, String[] strings) throws CommandException
+    {
         EntityPlayer player = (EntityPlayer)iCommandSender;
         if(strings.length == 3)
         {
@@ -48,7 +53,10 @@ public class ComandGenTable implements ICommand {
                         Integer.parseInt(strings[2]),
                         player);
             }
-            catch (NumberFormatException e) {}
+            catch (NumberFormatException e)
+            {
+                player.sendMessage(new TextComponentTranslation("command.gen_tables.usage"));
+            }
         }
     }
 

@@ -23,26 +23,6 @@ public class ModItems
         itemNetherIngot = new ItemNetherIngot("nether_ingot", "nether_ingot");
     }
 
-    public static void register()
-    {
-
-    }
-
-
-
-
-    public static void registerRenders()
-    {
-        registerRender(itemNetherIngot);
-    }
-
-    public static void registerRender(Item item)
-    {
-        ModelLoader.setCustomModelResourceLocation(item , 0,
-                new ModelResourceLocation(new ResourceLocation(
-                        Reference.MODID, item.getUnlocalizedName().substring(5)), "inventory"));
-        Utils.getLogger().info("wqy: Registered render for " + item.getUnlocalizedName().substring(5));
-    }
     @Mod.EventBusSubscriber(modid = Reference.MODID)
     public static class RegistrationHandler
     {

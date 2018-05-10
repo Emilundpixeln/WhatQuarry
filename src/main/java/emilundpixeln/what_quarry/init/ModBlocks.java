@@ -37,29 +37,6 @@ public class ModBlocks
         quarry = new BlockQuarry("quarry", "quarry");
     }
 
-    public static void register()
-    {
-
-    }
-
-
-
-
-    public static void registerRenders()
-    {
-        registerRender(quarry);
-    }
-
-    public static void registerRender(Block block)
-    {
-        /*
-        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block) , 0,
-                new ModelResourceLocation(new ResourceLocation(
-                        Reference.MODID, block.getUnlocalizedName().substring(5)), "inventory"));
-        Utils.getLogger().info("wqy: Registered render for " + block.getUnlocalizedName().substring(5));
-        Utils.getLogger().info("wqy: Item: " + Item.getItemFromBlock(block).getUnlocalizedName().substring(5));
-        */
-    }
     @Mod.EventBusSubscriber(modid = Reference.MODID)
     public static class RegistrationHandler
     {

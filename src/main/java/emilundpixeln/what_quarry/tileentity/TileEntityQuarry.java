@@ -32,6 +32,12 @@ import net.minecraftforge.items.IItemHandler;
 import javax.annotation.Nullable;
 import java.util.*;
 
+/*
+* Tile entity for the Quarry
+* the quarry randomly selects items instead of mining
+* uses rf and outputs to inventory above the quarry
+* */
+
 public class TileEntityQuarry extends TileEntity implements ITickable, IEnergyReceiver
 {
 
@@ -71,6 +77,9 @@ public class TileEntityQuarry extends TileEntity implements ITickable, IEnergyRe
         }
     }
 
+    /*
+    * loads data from WorldSavedData
+    * */
     private void getData()
     {
         loaded = true;
@@ -93,7 +102,9 @@ public class TileEntityQuarry extends TileEntity implements ITickable, IEnergyRe
             blacklist.add(data.getBlacklistItem(i));
         }
     }
-
+    /*
+    * gets Handler of inventory for outputting
+    * */
     private boolean getHandler()
     {
 
@@ -106,6 +117,9 @@ public class TileEntityQuarry extends TileEntity implements ITickable, IEnergyRe
         return false;
     }
 
+    /*
+    * scans a area to determine how likely it is for any block to be found
+    * that information is than used for generating new items*/
     public static void regenTables(int dim, int XWidth, int ZWidth, EntityPlayer inPlayer)
     {
         Utils.getLogger().info("qwy: exec command " + dim + " " + XWidth + " " + ZWidth);
@@ -114,7 +128,7 @@ public class TileEntityQuarry extends TileEntity implements ITickable, IEnergyRe
             return;
         int fortune = 0;
         Map<Pair<Item, Integer>, Integer /* Count*/> counts = new HashMap<>();
-        // Creates a fake player which will berak the block
+        // Creates a fake player which will break the block
         EntityPlayer player = new EntityPlayer(world, new GameProfile(null, "BlockBreaker")) {
 
             @Override
@@ -128,6 +142,8 @@ public class TileEntityQuarry extends TileEntity implements ITickable, IEnergyRe
             }
         };
 
+
+        //scan area
         for (int zchunk = 0; zchunk < ZWidth; zchunk++) {
             for (int xchunk = 0; xchunk < XWidth; xchunk++) {
                 for (int inChunkZ = 0; inChunkZ < 16; inChunkZ++) {
@@ -173,8 +189,9 @@ public class TileEntityQuarry extends TileEntity implements ITickable, IEnergyRe
                 }
             }
         }
-        double all = 0;
 
+        // determine how likely every item is
+        double all = 0;
         for (Map.Entry<Pair<Item, Integer>, Integer> entry : counts.entrySet())
         {
             all += entry.getValue();
@@ -192,8 +209,6 @@ public class TileEntityQuarry extends TileEntity implements ITickable, IEnergyRe
                     String.format("%.8f", (double)entry.getValue() / all * 100),
                     entry.getValue(),
                     (long)all));
-            //debug::
-            //world.playerEntities.get(0).addItemStackToInventory(itemstack);
         }
 
         Map<Pair<Item, Integer>, Integer> sortedCount = MapUtil.sortByValue(counts, false);
@@ -212,13 +227,13 @@ public class TileEntityQuarry extends TileEntity implements ITickable, IEnergyRe
         data.markReady();
         data.markDirty();
         item = items;
-        //send
+        //send information to player to inform that the command has finished
         if(inPlayer != null)
-            inPlayer.sendMessage(new TextComponentTranslation("tile.quarry.finished_gen"));
+            inPlayer.sendMessage(new TextComponentTranslation("command.gen_tables.finished_gen"));
         else
             for (EntityPlayer myplayer :
                     world.playerEntities) {
-                myplayer.sendMessage(new TextComponentTranslation("tile.quarry.finished_gen"));
+                myplayer.sendMessage(new TextComponentTranslation("command.gen_tables.finished_gen"));
             }
 
 
@@ -290,12 +305,14 @@ public class TileEntityQuarry extends TileEntity implements ITickable, IEnergyRe
                 if(item == null)
                     continue;
 
+                //find slot where the items can be inserted
                 for (int i = 0; i < output.getSlots(); i++) {
 
                     item = output.insertItem(i, item, false);
                     if(item == ItemStack.EMPTY)
                         break;
                 }
+                //don't count run if item couldn't be inserted
                 if(item != ItemStack.EMPTY)
                 {
                     irun--;
@@ -317,6 +334,7 @@ public class TileEntityQuarry extends TileEntity implements ITickable, IEnergyRe
             addItem = false;
         }
 
+        // add held item to blacklist (remove if already blacklisted
         if(addItem)
         {
             Pair<Item, Integer> pair = Utils.pairFromItemStack(heldItem);
@@ -347,7 +365,7 @@ public class TileEntityQuarry extends TileEntity implements ITickable, IEnergyRe
             data.markDirty();
         }
 
-
+        //print some info
         playerIn.sendMessage(new TextComponentTranslation("tile.quarry.info"));
         playerIn.sendMessage(new TextComponentTranslation("tile.quarry.rf", Integer.toString(storage.getEnergyStored())));
         playerIn.sendMessage(new TextComponentTranslation("tile.quarry.blacklist"));

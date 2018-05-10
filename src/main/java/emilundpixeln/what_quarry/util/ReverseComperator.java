@@ -4,6 +4,8 @@ package emilundpixeln.what_quarry.util;
 
 import java.util.Comparator;
 
+
+// for reverse sorting
 public class ReverseComperator<V extends Comparable<? super V>> implements Comparator<V> {
 
     @Override

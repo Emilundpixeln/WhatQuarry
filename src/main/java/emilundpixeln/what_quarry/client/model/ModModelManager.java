@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
 /**
- * Created by Emil_2 on 05.05.2018.
+ * for registering models
  */
 @Mod.EventBusSubscriber(value = Side.CLIENT, modid = Reference.MODID)
 public class ModModelManager

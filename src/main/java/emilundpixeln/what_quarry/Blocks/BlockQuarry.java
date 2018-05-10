@@ -19,6 +19,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.Random;
 
+
 public class BlockQuarry extends Block implements ITileEntityProvider
 {
     public BlockQuarry(String unlocalizedName, String registryName)
@@ -35,6 +36,7 @@ public class BlockQuarry extends Block implements ITileEntityProvider
         return Item.getItemFromBlock(this);
     }
 
+    // pass to the tile entitys onBlockActivated
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState p_onBlockActivated_3_, EntityPlayer playerIn, EnumHand enumHand, EnumFacing p_onBlockActivated_6_, float p_onBlockActivated_7_, float p_onBlockActivated_8_, float p_onBlockActivated_9_) {
         if(worldIn.isRemote)
