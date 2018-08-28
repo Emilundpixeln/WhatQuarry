@@ -1,6 +1,9 @@
 package emilundpixeln.what_quarry.commands;
 
+import emilundpixeln.what_quarry.QuarryTable;
 import emilundpixeln.what_quarry.tileentity.TileEntityQuarry;
+import net.minecraft.block.BlockBed;
+import net.minecraft.block.BlockNote;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
@@ -20,6 +23,7 @@ import java.util.List;
 
 public class ComandGenTable implements ICommand
 {
+
     @Override
     public boolean isUsernameIndex(String[] strings, int i) {
         return false;
@@ -32,7 +36,7 @@ public class ComandGenTable implements ICommand
 
     @Override
     public String getUsage(ICommandSender iCommandSender) {
-        return "dimId, numChunksX, numChunksY";
+        return "[dimId,] numChunksX, numChunksY";
     }
 
     @Override
@@ -44,14 +48,24 @@ public class ComandGenTable implements ICommand
     public void execute(MinecraftServer minecraftServer, ICommandSender iCommandSender, String[] strings) throws CommandException
     {
         EntityPlayer player = (EntityPlayer)iCommandSender;
-        if(strings.length == 3)
+        if(strings.length < 2)
+            player.sendMessage(new TextComponentTranslation("command.gen_tables.usage"));
+
+        if(strings.length == 3 || strings.length == 2)
         {
             try {
-
-                TileEntityQuarry.regenTables(Integer.parseInt(strings[0]),
-                        Integer.parseInt(strings[1]),
-                        Integer.parseInt(strings[2]),
-                        player);
+                List<EntityPlayer> players = new ArrayList<>(1);
+                players.add(player);
+                if(strings.length == 3)
+                    QuarryTable.regenTables(Integer.parseInt(strings[0]),
+                            Integer.parseInt(strings[1]),
+                            Integer.parseInt(strings[2]),
+                            players);
+                else
+                    QuarryTable.regenTables(0,
+                            Integer.parseInt(strings[0]),
+                            Integer.parseInt(strings[0]),
+                            players);
             }
             catch (NumberFormatException e)
             {

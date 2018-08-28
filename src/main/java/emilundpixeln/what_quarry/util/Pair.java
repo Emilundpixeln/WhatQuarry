@@ -6,7 +6,7 @@ import java.util.Objects;
 /*
 * Simple Pair that holds 2 Objects
 * */
-public class Pair<F, S> extends Object {
+public class Pair<F, S> {
     private final F first;
     private final S second;
 

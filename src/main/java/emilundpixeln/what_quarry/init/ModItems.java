@@ -17,10 +17,13 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 @GameRegistry.ObjectHolder(Reference.MODID)
 public class ModItems
 {
-    public static Item itemNetherIngot ;
+
+    @GameRegistry.ObjectHolder(Reference.MODID + ":nether_ingot")
+    public static ItemNetherIngot itemNetherIngot = new ItemNetherIngot("nether_ingot", "nether_ingot");
+
     public static void init()
     {
-        itemNetherIngot = new ItemNetherIngot("nether_ingot", "nether_ingot");
+        itemNetherIngot.initModel();
     }
 
     @Mod.EventBusSubscriber(modid = Reference.MODID)
@@ -28,7 +31,7 @@ public class ModItems
     {
         @SubscribeEvent
         public static void registerItems(RegistryEvent.Register<Item> event) {
-            event.getRegistry().registerAll(itemNetherIngot);
+            event.getRegistry().register(itemNetherIngot);
 
         }
     }

@@ -5,4 +5,4 @@ tile.quarry.rf= RF stored §2%s
 tile.quarry.blacklist=Blacklisted Items:
 tile.quarry.item= §4%s
 command.gen_tables.finished_gen=Finished generating table
-command.gen_tables.usage=Usage: dimId, numChunksX, numChunksY
+command.gen_tables.usage=Usage: [dimId,] numChunksX, numChunksY

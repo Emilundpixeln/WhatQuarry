@@ -2,6 +2,7 @@ package emilundpixeln.what_quarry.tileentity;
 
 import cofh.redstoneflux.api.IEnergyReceiver;
 import com.mojang.authlib.GameProfile;
+import emilundpixeln.what_quarry.QuarryTable;
 import emilundpixeln.what_quarry.World.ItemRarityPair;
 import emilundpixeln.what_quarry.World.ItemsWorldSavedData;
 import emilundpixeln.what_quarry.util.MapUtil;
@@ -49,20 +50,13 @@ public class TileEntityQuarry extends TileEntity implements ITickable, IEnergyRe
     private static boolean loaded = false;
 
 
-    private static NavigableMap<Double, Pair<Item, Integer>> item;
     private static Set<Pair<Item, Integer>> blacklist;
 
 
     public TileEntityQuarry()
     {
         output = null;
-        if(item == null)
-        {
 
-            item = new TreeMap<>();
-            item.put(1.0, new Pair<>(Item.getItemFromBlock(Blocks.STONE), 0));
-
-        }
 
         if(rnd == null)
         {
@@ -90,11 +84,7 @@ public class TileEntityQuarry extends TileEntity implements ITickable, IEnergyRe
             loaded = false;
             return;
         }
-        item = new TreeMap<>();
-        for (int i = 0; i < data.getSize(); i++) {
-            ItemRarityPair ir = data.getItem(i);
-            item.put(ir.chance, ir.item);
-        }
+
 
         blacklist = new HashSet<>();
         int size = data.getBlacklistSize();
@@ -117,164 +107,15 @@ public class TileEntityQuarry extends TileEntity implements ITickable, IEnergyRe
         return false;
     }
 
-    /*
-    * scans a area to determine how likely it is for any block to be found
-    * that information is than used for generating new items*/
-    public static void regenTables(int dim, int XWidth, int ZWidth, EntityPlayer inPlayer)
-    {
-        Utils.getLogger().info("qwy: exec command " + dim + " " + XWidth + " " + ZWidth);
-        WorldServer world = DimensionManager.getWorld(dim);
-        if(world == null)
-            return;
-        int fortune = 0;
-        Map<Pair<Item, Integer>, Integer /* Count*/> counts = new HashMap<>();
-        // Creates a fake player which will break the block
-        EntityPlayer player = new EntityPlayer(world, new GameProfile(null, "BlockBreaker")) {
 
-            @Override
-            public boolean isSpectator() {
-                return true;
-            }
-
-            @Override
-            public boolean isCreative() {
-                return false;
-            }
-        };
-
-
-        //scan area
-        for (int zchunk = 0; zchunk < ZWidth; zchunk++) {
-            for (int xchunk = 0; xchunk < XWidth; xchunk++) {
-                for (int inChunkZ = 0; inChunkZ < 16; inChunkZ++) {
-                    for (int inChunkX = 0; inChunkX < 16; inChunkX++) {
-                        for (int inChunkY = 0; inChunkY < 16; inChunkY++) {
-
-                            BlockPos p = new BlockPos(xchunk * 16 + inChunkX, inChunkY, zchunk * 16 + inChunkZ);
-                            IBlockState state = world.getBlockState(p);
-                            Block block = state.getBlock();
-
-                            if(!block.isAir(state, world, p) && block.getBlockHardness(state, world, p) >= 0
-                                    && !(block instanceof BlockDynamicLiquid) && !(block instanceof BlockStaticLiquid))
-                            {
-
-                                Pair<Item, Integer> key;
-                                boolean silk = false;
-                                if(block.canSilkHarvest(world, p, state, player))
-                                {
-
-                                    key = new Pair<>(Item.getItemFromBlock(block),
-                                            block.damageDropped(state));
-                                    silk = true;
-                                }
-                                else
-                                {
-                                    Item drop = block.getItemDropped(state,  world.rand, 0);
-                                    key = new Pair<>(drop, block.damageDropped(state));
-                                }
-
-
-
-                                int cur = 0;
-                                if(counts.containsKey(key))
-                                    cur = counts.get(key);
-
-                                counts.put(key,
-                                        cur + (silk ? 1 : block.quantityDropped(state, fortune, world.rand)));
-                            }
-
-
-                        }
-                    }
-                }
-            }
-        }
-
-        // determine how likely every item is
-        double all = 0;
-        for (Map.Entry<Pair<Item, Integer>, Integer> entry : counts.entrySet())
-        {
-            all += entry.getValue();
-
-        }
-        // debug
-        Map<Pair<Item, Integer>, Integer> sortedrevCount = MapUtil.sortByValue(counts, true);
-        for (Map.Entry<Pair<Item, Integer>, Integer> entry : sortedrevCount.entrySet())
-        {
-            ItemStack itemstack = new ItemStack(entry.getKey().getKey());
-            itemstack.setItemDamage(entry.getKey().getValue());
-
-            Utils.getLogger().info(String.format("qwy:%-25s%13s%% | amount: %9s/%s",
-                    itemstack.getDisplayName(),
-                    String.format("%.8f", (double)entry.getValue() / all * 100),
-                    entry.getValue(),
-                    (long)all));
-        }
-
-        Map<Pair<Item, Integer>, Integer> sortedCount = MapUtil.sortByValue(counts, false);
-        NavigableMap<Double, Pair<Item, Integer>> items = new TreeMap<>();
-        double sum = 0;
-        ItemsWorldSavedData data = ItemsWorldSavedData.get(world);
-        data.setItemSize(sortedCount.size());
-
-        int j = 0;
-        for (Map.Entry<Pair<Item, Integer>, Integer> entry : sortedCount.entrySet())
-        {
-            sum += (double)entry.getValue() / all;
-            items.put(sum, entry.getKey());
-            data.addItemTag(j++, entry.getKey(), sum);
-        }
-        data.markReady();
-        data.markDirty();
-        item = items;
-        //send information to player to inform that the command has finished
-        if(inPlayer != null)
-            inPlayer.sendMessage(new TextComponentTranslation("command.gen_tables.finished_gen"));
-        else
-            for (EntityPlayer myplayer :
-                    world.playerEntities) {
-                myplayer.sendMessage(new TextComponentTranslation("command.gen_tables.finished_gen"));
-            }
-
-
-
-        //check if it works
-        /*
-        Map<Pair<Item, Integer>, Integer > countsTested = new HashMap<>();
-
-        for (int i = 0; i < all; i++) {
-            ItemStack itemstack = getNextItem();
-            Pair<Item, Integer> key = new Pair<>(itemstack.getItem(), itemstack.getItemDamage());
-            int cur = 0;
-            if(countsTested.containsKey(key))
-                cur = countsTested.get(key);
-
-            countsTested.put(key,
-                    cur + 1);
-        }
-        // debug
-        Utils.getLogger().info("qwy: Diff:");
-        Map<Pair<Item, Integer>, Integer> sortedrevCountTested = MapUtil.sortByValue(countsTested, true);
-        double sumErr = 0;
-        for (Map.Entry<Pair<Item, Integer>, Integer> entry : sortedrevCountTested.entrySet())
-        {
-            ItemStack itemstack = new ItemStack(entry.getKey().getKey());
-            itemstack.setItemDamage(entry.getKey().getValue());
-            double err = (double)entry.getValue() / all * 100 - (double)(counts.get(entry.getKey())) / all * 100;
-            Utils.getLogger().info(String.format("qwy: :%-25s%13s%%",
-                    itemstack.getDisplayName(),
-                    String.format("%.8f", err)));
-            sumErr += Math.abs(err);
-        }
-        Utils.getLogger().info("qwy: average Error: " + sumErr / sortedrevCountTested.size());
-        */
-    }
-
-    private static ItemStack getNextItem()
+    private ItemStack getNextItem()
     {
 
         double value = rnd.nextDouble();
-        Pair<Item, Integer> gotItem = item.higherEntry(value).getValue();
+        NavigableMap<Double, Pair<Item, Integer>> table = QuarryTable.getTable(world);
+        NavigableMap.Entry<Double, Pair<Item, Integer>> entry = table.higherEntry(value);
+
+        Pair<Item, Integer> gotItem = entry.getValue();
         ItemStack ret = new ItemStack(gotItem.getKey());
         if(gotItem.getKey() != Item.getItemFromBlock(Blocks.LAPIS_ORE))
             ret.setItemDamage(gotItem.getValue());
@@ -292,7 +133,10 @@ public class TileEntityQuarry extends TileEntity implements ITickable, IEnergyRe
 
         active = !world.isBlockPowered(pos);
         if(!loaded)
+        {
+            // load
             getData();
+        }
         int runs = storage.getEnergyStored() / RF_PER_RUN;
         if (active && runs > 0) {
 
