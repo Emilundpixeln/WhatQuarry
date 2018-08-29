@@ -5,6 +5,7 @@ import emilundpixeln.what_quarry.event.EventHandler;
 import emilundpixeln.what_quarry.init.ModBlocks;
 import emilundpixeln.what_quarry.init.ModItems;
 import emilundpixeln.what_quarry.util.Utils;
+import net.minecraft.block.BlockBeacon;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;

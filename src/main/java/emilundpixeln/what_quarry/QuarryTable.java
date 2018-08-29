@@ -39,7 +39,7 @@ public class QuarryTable {
         }
         if(m_items.size() == 0)
         {
-            int i = 0;
+            regenTables(0, 16, 16, null);
         }
 
         return m_items;
@@ -186,7 +186,8 @@ public class QuarryTable {
         m_items = items;
 
         //send information to player to inform that the command has finished
-        inPlayer.forEach(entityPlayer ->
+        if(inPlayer != null)
+            inPlayer.forEach(entityPlayer ->
                 entityPlayer.sendStatusMessage(new TextComponentTranslation("command.gen_tables.finished_gen"), true));
     }
 
