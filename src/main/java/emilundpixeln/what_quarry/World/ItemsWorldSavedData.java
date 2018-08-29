@@ -118,7 +118,7 @@ public class ItemsWorldSavedData extends WorldSavedData {
 
 
     public static ItemsWorldSavedData get(World world) {
-        MapStorage storage = world.getMapStorage();
+        MapStorage storage = world.getPerWorldStorage();
         ItemsWorldSavedData instance;
         try {
             instance = (ItemsWorldSavedData) storage.getOrLoadData(ItemsWorldSavedData.class, DATA_NAME);

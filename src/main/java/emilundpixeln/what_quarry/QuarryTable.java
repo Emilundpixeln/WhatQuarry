@@ -18,6 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.DimensionManager;
 
 import java.util.*;
@@ -95,17 +96,19 @@ public class QuarryTable {
         //scan area
         for (int zchunk = 0; zchunk < ZWidth; zchunk++) {
             for (int xchunk = 0; xchunk < XWidth; xchunk++) {
+                int[] yMax = world.getChunkFromChunkCoords(zchunk, xchunk).getHeightMap();
                 for (int inChunkZ = 0; inChunkZ < 16; inChunkZ++) {
                     for (int inChunkX = 0; inChunkX < 16; inChunkX++) {
-                        for (int inChunkY = 0; inChunkY < 16; inChunkY++) {
+                        for (int inChunkY = 0; inChunkY < yMax[inChunkZ << 4 | inChunkX] + 1; inChunkY++) {
 
-                            BlockPos p = new BlockPos(xchunk * 16 + inChunkX, inChunkY, zchunk * 16 + inChunkZ);
+                            BlockPos p = new BlockPos(xchunk << 4 | inChunkX, inChunkY, zchunk << 4 | inChunkZ);
+
                             IBlockState state = world.getBlockState(p);
 
                             Block block = state.getBlock();
 
                             // avoid air, liquids...
-                            if(!block.isAir(state, world, p) && block.getBlockHardness(state, world, p) >= 0
+                            if(block != Blocks.AIR && block.getBlockHardness(state, world, p) >= 0
                                     && !(block instanceof BlockDynamicLiquid) && !(block instanceof BlockStaticLiquid))
                             {
 

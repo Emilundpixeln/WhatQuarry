@@ -8,6 +8,7 @@ import emilundpixeln.what_quarry.World.ItemsWorldSavedData;
 import emilundpixeln.what_quarry.util.MapUtil;
 import emilundpixeln.what_quarry.util.Utils;
 import emilundpixeln.what_quarry.util.Pair;
+import jline.internal.Log;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDynamicLiquid;
 import net.minecraft.block.BlockStaticLiquid;
@@ -27,6 +28,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.energy.EnergyStorage;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
@@ -49,12 +51,13 @@ public class TileEntityQuarry extends TileEntity implements ITickable, IEnergyRe
     private static final int RF_PER_RUN = 20000;
     private static boolean loaded = false;
 
-
     private static Set<Pair<Item, Integer>> blacklist;
 
 
     public TileEntityQuarry()
     {
+
+
         output = null;
 
 
@@ -117,8 +120,14 @@ public class TileEntityQuarry extends TileEntity implements ITickable, IEnergyRe
 
         Pair<Item, Integer> gotItem = entry.getValue();
         ItemStack ret = new ItemStack(gotItem.getKey());
+        //because Lapis is weird
         if(gotItem.getKey() != Item.getItemFromBlock(Blocks.LAPIS_ORE))
-            ret.setItemDamage(gotItem.getValue());
+        {
+            // for actually actually additions crystal cluster
+            String regname = gotItem.getKey().getRegistryName().toString();
+            if(!(regname.length() > 40 && regname.substring(0, 40).equals("actuallyadditions:block_crystal_cluster_")))
+                ret.setItemDamage(gotItem.getValue());
+        }
         if(blacklist.contains(gotItem))
             return null;
         return ret;
@@ -182,6 +191,10 @@ public class TileEntityQuarry extends TileEntity implements ITickable, IEnergyRe
         if(addItem)
         {
             Pair<Item, Integer> pair = Utils.pairFromItemStack(heldItem);
+            //because LAPIS_ORE has meta value 4 if found underground
+            if(pair.getKey() == Item.getItemFromBlock(Blocks.LAPIS_ORE))
+                pair.setValue(4);
+
             Utils.getLogger().info("qwy: " + heldItem.getDisplayName());
             ItemsWorldSavedData data = ItemsWorldSavedData.get(world);
             int size = data.getBlacklistSize();

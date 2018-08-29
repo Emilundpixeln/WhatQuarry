@@ -7,8 +7,8 @@ import java.util.Objects;
 * Simple Pair that holds 2 Objects
 * */
 public class Pair<F, S> {
-    private final F first;
-    private final S second;
+    private F first;
+    private S second;
 
 
     public Pair(F first, S second) {
@@ -27,6 +27,13 @@ public class Pair<F, S> {
         return second;
     }
 
+    public void setKey(F key) {
+        first = key;
+    }
+
+    public void setValue(S value) {
+        second = value;
+    }
 
     @Override
     public boolean equals(Object o) {
